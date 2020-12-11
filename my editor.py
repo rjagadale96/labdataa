@@ -17,7 +17,7 @@ sqs = boto3.resource('sqs',region_name='us-east-1')
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/guide/sqs.html#processing-messages
 # Get the queue
-queue = sqs.get_queue_by_name(QueueName='queuemv')
+queue = sqs.get_queue_by_name(QueueName='rbj-sqs-itmo-544')
 
 # Process messages by printing out body and optional author name
 for message in queue.receive_messages():
@@ -30,7 +30,7 @@ for message in queue.receive_messages():
 
 dynamodb = boto3.resource('dynamodb', endpoint_url="https://dynamodb.us-east-1.amazonaws.com")
 
-table = dynamodb.Table('Company')
+table = dynamodb.Table('company')
 
 response = table.scan()
 data= response['Items']
@@ -59,7 +59,7 @@ for bucket in s3.buckets.all():
 print("bucket1 =" + bucket1 + " bucket= "+bucket2)
 
 # s3.download_file('BUCKET_NAME', 'OBJECT_NAME', 'FILE_NAME')
-s3Client.download_file(bucket2, 'data.png', "/tmp/image-minu.png")
+s3Client.download_file(bucket1, 'data.png', "/tmp/image-minu.png")
 
 # Process image with PIL 
 # use sample code from render-image.py
@@ -77,7 +77,10 @@ background.save("/tmp/thumbnail.png")
 # Put Image Object back into S3 Bucket
 # use source code from upload-image-to-s3.py
 
-s3.Object(bucket1, "rendered-image-minu-uuid.png").upload_file("/tmp/thumbnail.png")
+imageName="rendered-image-rohit"+msg+".png"
+
+
+s3.Object(bucket2, imageName).upload_file("/tmp/thumbnail.png")
 
 #DB table update
 response = table.update_item(
@@ -98,7 +101,7 @@ response = table.update_item(
 
 response = client.publish(
     PhoneNumber=Phone,
-    Message="Hello"+name+". Your image has been rendered”,
+    Message=name,
     Subject="AWS Message"
 )
 
